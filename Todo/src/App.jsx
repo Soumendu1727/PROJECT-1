@@ -1,35 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// App.js
+
+import React, { useState } from 'react';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [tasks, setTasks] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
+  const handleAddTask = () => {
+    if (inputValue.trim() !== '') {
+      setTasks([...tasks, { id: Date.now(), text: inputValue, completed: false }]);
+      setInputValue('');
+    }
+  };
+
+  const handleTaskDelete = (taskId) => {
+    setTasks(tasks.filter(task => task.id !== taskId));
+  };
+
+  const handleTaskComplete = (taskId) => {
+    setTasks(tasks.map(task => {
+      if (task.id === taskId) {
+        return { ...task, completed: !task.completed };
+      }
+      return task;
+    }));
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="App">
+      <h1>To-Do List</h1>
+      <div className="add-task">
+        <input type="text" value={inputValue} onChange={handleInputChange} placeholder="Enter task..." />
+        <button onClick={handleAddTask}>Add Task</button>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> SADHUKHANSOUMENDU@GMAIL.COM
-        </p>
-      </div>
-      <p className="read-the-docs">
-        SOUMENDU SADHUKHAN
-      </p>
-    </>
-  )
+      <ul>
+        {tasks.map(task => (
+          <li key={task.id} className={task.completed ? 'completed' : ''}>
+            <span>{task.text}</span>
+            <div>
+              <button onClick={() => handleTaskComplete(task.id)}>{task.completed ? 'Undo' : 'Complete'}</button>
+              <button onClick={() => handleTaskDelete(task.id)}>Delete</button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 }
 
-export default App
+export default App;
