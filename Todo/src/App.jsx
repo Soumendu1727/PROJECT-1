@@ -1,11 +1,11 @@
-// App.js
-
 import React, { useState } from 'react';
 import './App.css';
 
 function App() {
   const [tasks, setTasks] = useState([]);
   const [inputValue, setInputValue] = useState('');
+  const [editTaskId, setEditTaskId] = useState(null);
+  const [editTaskText, setEditTaskText] = useState('');
 
   const handleInputChange = (event) => {
     setInputValue(event.target.value);
@@ -31,6 +31,22 @@ function App() {
     }));
   };
 
+  const handleTaskEdit = (task) => {
+    setEditTaskId(task.id);
+    setEditTaskText(task.text);
+  };
+
+  const handleTaskUpdate = () => {
+    setTasks(tasks.map(task => {
+      if (task.id === editTaskId) {
+        return { ...task, text: editTaskText };
+      }
+      return task;
+    }));
+    setEditTaskId(null);
+    setEditTaskText('');
+  };
+
   return (
     <div className="App">
       <h1>To-Do List</h1>
@@ -41,8 +57,17 @@ function App() {
       <ul>
         {tasks.map(task => (
           <li key={task.id} className={task.completed ? 'completed' : ''}>
-            <span>{task.text}</span>
+            {editTaskId === task.id ? (
+              <input type="text" value={editTaskText} onChange={(e) => setEditTaskText(e.target.value)} />
+            ) : (
+              <span>{task.text}</span>
+            )}
             <div>
+              {editTaskId === task.id ? (
+                <button onClick={handleTaskUpdate}>Update</button>
+              ) : (
+                <button onClick={() => handleTaskEdit(task)}>Edit</button>
+              )}
               <button onClick={() => handleTaskComplete(task.id)}>{task.completed ? 'Undo' : 'Complete'}</button>
               <button onClick={() => handleTaskDelete(task.id)}>Delete</button>
             </div>
